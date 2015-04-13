@@ -4,6 +4,7 @@ $params = require(__DIR__ . '/params.php');
 
 $config = [
     'id' => 'basic',
+    'language' => 'zh-CN', // 启用国际化支持
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'components' => [
@@ -17,6 +18,12 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
+        ],
+        'authManager' => [
+            // 配置 DbManager 鉴权管理器
+            'class' => 'yii\rbac\Dbmanager',
+            // 定义默认角色
+            'defaultRoles' => ['guest'],
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -40,7 +47,7 @@ $config = [
         'db' => require(__DIR__ . '/db.php'),
         'urlManager' => [
             'enablePrettyUrl' => true,
-            'showScriptName' => false,//隐藏index.php 
+            'showScriptName' => false,//隐藏index.php
              //‘enableStrictParsing‘ => false,
             'suffix' => '.html',//后缀，如果设置了此项，那么浏览器地址栏就必须带上.html后缀，否则会报404错误
             'rules' => [

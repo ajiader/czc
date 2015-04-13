@@ -2,11 +2,27 @@
 
 namespace app\modules\admin\controllers;
 
-class LoginController extends \yii\web\Controller
+use Yii;
+use app\core\back\BaseBackController;
+use app\models\LoginForm;
+
+class LoginController extends BaseBackController
 {
     public function actionIndex()
     {
-        return $this->renderPartial('index');
+        if (!\Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $model = new LoginForm();
+        if ($model->load(\Yii::$app->request->post()) && $model->login()) {
+            return $this->goBack();
+        } else {
+            return $this->renderPartial('index', [
+                'model' => $model,
+            ]);
+        }
     }
+
 
 }

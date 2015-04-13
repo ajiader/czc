@@ -2,7 +2,10 @@
 
 namespace app\modules\admin;
 
-class AdminModule extends \yii\base\Module
+use app\core\base\BaseModule;
+
+
+class AdminModule extends BaseModule
 {
     public $controllerNamespace = 'app\modules\admin\controllers';
 
