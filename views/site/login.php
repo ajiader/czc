@@ -9,7 +9,6 @@ use yii\bootstrap\ActiveForm;
 $this->title = 'Login';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<?php $this->beginPage() ?>
 <div class="site-login">
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -27,9 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $form->field($model, 'username') ?>
 
     <?= $form->field($model, 'password')->passwordInput() ?>
-    <?= $form->field($model, 'verifyCode')->widget(\yii\captcha\Captcha::className(), [
-        'template' => '<div class="row"><div class="col-lg-6">{input}</div><div class="col-lg-3">{image}</div></div>',
-    ]) ?>
+
     <?= $form->field($model, 'rememberMe', [
         'template' => "<div class=\"col-lg-offset-1 col-lg-3\">{input}</div>\n<div class=\"col-lg-8\">{error}</div>",
     ])->checkbox() ?>

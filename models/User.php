@@ -17,8 +17,10 @@ use Yii;
  * @property integer $created_at
  * @property integer $updated_at
  */
-class User extends \app\core\base\BaseActiveRecord
+class User extends \app\core\base\BaseActiveRecord  implements \yii\web\IdentityInterface
 {
+    public $password;
+    public $rememberMe;
     /**
      * @inheritdoc
      */
@@ -33,11 +35,19 @@ class User extends \app\core\base\BaseActiveRecord
     public function rules()
     {
         return [
-            [['username', 'auth_key', 'password_hash', 'email', 'created_at', 'updated_at'], 'required'],
+            [['username', 'auth_key', 'password_hash', 'email', 'created_at', 'updated_at','password'], 'required'],
             [['status', 'created_at', 'updated_at'], 'integer'],
-            [['username', 'password_hash', 'password_reset_token', 'email'], 'string', 'max' => 255],
+            [['username', 'password_hash', 'password_reset_token', 'email'], 'string', 'max' => 8],
             [['auth_key'], 'string', 'max' => 32]
         ];
+    }
+
+    public function scenarios()
+    {
+        $parent = parent::scenarios();
+        $parent['login'] = ['username','password'];
+        $parent['register'] = ['username','password','email'];
+        return $parent;
     }
 
     /**
@@ -57,4 +67,64 @@ class User extends \app\core\base\BaseActiveRecord
             'updated_at' => 'Updated At',
         ];
     }
+
+
+    public static function findIdentity($id)
+    {
+        return User::findOne(['id'=>$id]);
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        foreach (self::$users as $user) {
+            if ($user['accessToken'] === $token) {
+                return new static($user);
+            }
+        }
+
+        return null;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getAuthKey()
+    {
+        return $this->auth_key;
+    }
+
+    public function validateAuthKey($authKey)
+    {
+        return $this->auth_key === $authKey;
+    }
+
+    public function validatePassword($password,$password_hash)
+    {
+        return Yii::$app->security->validatePassword($password, $password_hash);
+    }
+
+
+    public function login()
+    {
+        if(!$this->validate()){
+            return false;
+        }
+
+        $user = User::findOne(['username' => $this->username]);
+
+        if($user!==null){
+            if($this->validatePassword($this->password,$user->password_hash)){
+                \Yii::$app->user->login($user,50000);
+                return true;
+            }
+
+            return false;
+        }else{
+
+            return false;
+        }
+    }
+
 }
